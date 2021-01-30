@@ -1,4 +1,4 @@
-import redis from '../../../libs/redis'
+import db from '../../../libs/db'
 import sendRes from '../../../libs/send-res-with-module-map'
 import session from '../../../libs/session'
 
@@ -7,9 +7,10 @@ export default async (req, res) => {
   const id = +req.query.id
   const login = req.session.login
 
-  console.time('get item from redis')
-  const note = JSON.parse((await redis.hget('rsc:notes_2', id)) || 'null')
-  console.timeEnd('get item from redis')
+  console.time('get item from db')
+  const [val, _] = await db.pool.promise().query("SELECT * FROM notes WHERE id = ? LIMIT 1", [id])
+  const note = val[0]
+  console.timeEnd('get item from db')
 
   if (req.method === 'GET') {
     return res.send(JSON.stringify(note))
@@ -20,9 +21,9 @@ export default async (req, res) => {
       return res.status(403).send('Unauthorized')
     }
 
-    console.time('delete item from redis')
-    await redis.hdel('rsc:notes_2', id)
-    console.timeEnd('delete item from redis')
+    console.time('delete item from db')
+    await db.pool.promise().query("DELETE FROM notes WHERE id = ?", id)
+    console.timeEnd('delete item from db')
 
     return sendRes(req, res, null)
   }
@@ -32,16 +33,10 @@ export default async (req, res) => {
       return res.status(403).send('Unauthorized')
     }
 
-    console.time('update item from redis')
-    const updated = {
-      id,
-      title: (req.body.title || '').slice(0, 255),
-      updated_at: Date.now(),
-      body: (req.body.body || '').slice(0, 2048),
-      created_by: login,
-    }
-    await redis.hset('rsc:notes_2', id, JSON.stringify(updated))
-    console.timeEnd('update item from redis')
+    console.time('update item from db')
+    await db.pool.promise().query("UPDATE notes SET body = ?, title = ? WHERE id = ?",
+      [req.body.body, req.body.title, id])
+    console.timeEnd('update item from db')
 
     return sendRes(req, res, null)
   }
