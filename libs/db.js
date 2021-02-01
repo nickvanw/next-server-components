@@ -25,6 +25,7 @@ exports.startDB = async function(branch) {
     migrateRetry(conn, 5, 1000, function(err) {
         if (err != null) {
             console.log('Failed to connect/migrate DB', err)
+            //todo(nick): we should raise an error here? 
         }
     })
     return dbPass
