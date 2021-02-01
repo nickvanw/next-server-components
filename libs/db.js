@@ -1,21 +1,68 @@
 var mysql = require('mysql2')
 var psProxy = require('planetscale-proxy')
+const schema = `
+CREATE TABLE IF NOT EXISTS notes (
+id bigint unsigned NOT NULL AUTO_INCREMENT, 
+title varchar(255) NOT NULL, 
+body text NOT NULL, 
+created_by varchar(255) NOT NULL, 
+updated_at datetime(6) NOT NULL default current_timestamp(6) on update current_timestamp(6), 
+PRIMARY KEY (id)
+) ENGINE = InnoDB DEFAULT CHARSET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci;`
 
-class database {
-    constructor(branch) {
-        console.log('init')
-        var db = process.env.PSDB_DB_NAME.split('/')
-        var pass = psProxy.dbPass('test')
-        psProxy.startProxy('test')
-        this.pool = mysql.createConnection({
-            host: 'localhost',
-            port: 3307,
-            user: 'root',
-            password: pass,
-            database: db[1],
+
+exports.startDB = async function(branch) {
+    psProxy.startProxy(branch)
+    var dbPass = psProxy.dbPass(branch)
+    var db = process.env.PSDB_DB_NAME.split('/')
+    var conn = mysql.createConnection({
+        host: 'localhost',
+        port: 3307,
+        user: 'root',
+        password: dbPass,
+        database: db[1],
         })
-        this.pool.connect()
-    }
+    migrateRetry(conn, 5, 1000, function(err) {
+        if (err != null) {
+            console.log('Failed to connect/migrate DB', err)
+        }
+    })
+    return dbPass
 }
 
-module.exports = new database('test')
+exports.pool = function(dbPass) {
+    var db = process.env.PSDB_DB_NAME.split('/')
+    var pool = mysql.createPool({
+        host: 'localhost',
+        port: 3307,
+        user: 'root',
+        password: dbPass,
+        database: db[1],
+    })
+    return pool
+}
+
+function migrateRetry(db, retryTimes, retryDelay, callback) {
+    var cntr = 0;
+
+    function run() {
+        // try your async operation
+        db.execute(schema, function(err, _, _) {
+            ++cntr;
+            if (err && err.errno != 1050) {
+                if (cntr >= retryTimes) {
+                    // if it fails too many times, just send the error out
+                    callback(err);
+                } else {
+                    // try again after a delay
+                    setTimeout(run, retryDelay);
+                }
+            } else {
+                // success, send the data out
+                callback(null);
+            }
+        });
+    }
+    // start our first request
+    run();
+}
