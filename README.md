@@ -10,7 +10,6 @@ Experimental app of React Server Components with Next.js, based on [React Server
 You need these environment variables to run this app (you can create a `.env` file):
 
 ```
-REDIS_URL='rediss://:<password>@<url>:<port>' // or `redis://` if no TLS
 ENDPOINT='http://localhost:3000'              // need to be absolute url to run in prod/local
 NEXT_PUBLIC_ENDPOINT='http://localhost:3000'  // same as above
 SESSION_KEY='<random key for cookie-based session>'
@@ -27,7 +26,7 @@ Go to `localhost:3000` to view the application.
 
 ### Deploy
 
-[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/git/external?repository-url=https%3A%2F%2Fgithub.com%2Fvercel%2Fnext-server-components&env=REDIS_URL,ENDPOINT,NEXT_PUBLIC_ENDPOINT,SESSION_KEY,OAUTH_CLIENT_KEY,OAUTH_CLIENT_SECRET&project-name=next-server-components&repo-name=next-server-components&demo-title=React%20Server%20Components%20(Experimental%20Demo)&demo-description=Experimental%20demo%20of%20React%20Server%20Components%20with%20Next.js.%20&demo-url=https%3A%2F%2Fnext-server-components.vercel.app&demo-image=https%3A%2F%2Fnext-server-components.vercel.app%2Fog.png)
+[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/git/external?repository-url=https%3A%2F%2Fgithub.com%2Fnickvanw%2Fnext-server-components&integration-ids=oac_N6r8tYnTlzgC8p4EZ0Cimznc&env=ENDPOINT,NEXT_PUBLIC_ENDPOINT,SESSION_KEY,OAUTH_CLIENT_KEY,OAUTH_CLIENT_SECRET&project-name=next-server-components&repo-name=next-server-components&demo-title=React%20Server%20Components%20(Experimental%20Demo)&demo-description=Experimental%20demo%20of%20React%20Server%20Components%20with%20Next.js.%20&demo-url=https%3A%2F%2Fnext-server-components.vercel.app&demo-image=https%3A%2F%2Fnext-server-components.vercel.app%2Fog.png)
 
 ## Caveats
 
