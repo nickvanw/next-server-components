@@ -1,4 +1,4 @@
-import getConfig from 'next/config'
-const cfg = getConfig().serverRuntimeConfig
+const db = require('./db')
+dbPass = db.startDB('test')
 
-module.exports = cfg.db.pool(cfg.dbPass);
+module.exports = db.pool(dbPass);

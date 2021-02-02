@@ -1,7 +1,7 @@
 const ReactServerWebpackPlugin = require('react-server-dom-webpack/plugin')
 const fs = require('fs')
 const db = require('./libs/db')
-const dbPass = db.startDB('development')
+db.startAndMigrate('test')
 
 let manifest
 class CopyReactClientManifest {
@@ -35,9 +35,5 @@ module.exports = {
     config.plugins.push(new ReactServerWebpackPlugin({ isServer: false }))
     config.plugins.push(new CopyReactClientManifest())
     return config
-  },
-  serverRuntimeConfig: {
-    db: db,
-    dbPass: dbPass
   }
 }
