@@ -30,7 +30,7 @@
     "react-server-dom-webpack": "0.0.0-experimental-3310209d0",
     "sanitize-html": "^2.3.0",
     "webpack": "4.44.1",
-    "planetscale-proxy": "0.0.4"
+    "psdb-node": "0.0.6"
   },
   "devDependencies": {
     "prettier": "2.2.1"
