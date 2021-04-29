@@ -11,4 +11,4 @@ PRIMARY KEY (id)
 
 
 
-module.exports = new PSDB('test')
+module.exports = new PSDB('main')
